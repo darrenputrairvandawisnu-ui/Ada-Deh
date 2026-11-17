@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#090909" />
+  <title>A Little Something for Ratna</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap');
+
+    :root {
+      --bg: #090909;
+      --fg: #f4f0e9;
+      --muted: #a7a19a;
+      --line: rgba(255,255,255,.15);
+      --serif: 'Playfair Display', Georgia, serif;
+      --sans: 'DM Sans', Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0; min-height: 100vh; background: var(--bg); color: var(--fg);
+      font-family: var(--sans); overflow-x: hidden;
+    }
+
+    body::before {
+      content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 5;
+      opacity: .12; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.25'/%3E%3C/svg%3E");
+    }
+
+    button { font: inherit; }
+    .screen {
+      min-height: 100svh; width: 100%; display: none; position: relative;
+      padding: 28px 22px; align-items: center; justify-content: center;
+      overflow: hidden; isolation: isolate;
+    }
+
+    .screen.active { display: flex; animation: screenIn .9s ease both; }
+    @keyframes screenIn { from { opacity: 0; } to { opacity: 1; } }
+    .content { width: min(100%, 680px); text-align: center; position: relative; z-index: 2; }
+    .eyebrow {
+      text-transform: uppercase; letter-spacing: .28em; color: var(--muted);
+      font-size: 10px; font-weight: 500;
+    }
+
+    h1, h2, .serif { font-family: var(--serif); font-weight: 400; }
+    h1 { font-size: clamp(43px, 10vw, 82px); line-height: 1.08; margin: 24px 0; letter-spacing: -.04em; }
+    h2 { font-size: clamp(34px, 8vw, 58px); line-height: 1.13; margin: 18px 0; }
+    p { color: var(--muted); line-height: 1.9; font-size: 14px; }
+    .accent { font-style: italic; color: #fff; }
+    .rule { width: 42px; height: 1px; background: rgba(255,255,255,.55); margin: 28px auto; }
+    .btn {
+      border: 1px solid rgba(255,255,255,.48); color: var(--fg); background: transparent;
+      padding: 14px 24px; border-radius: 2px; cursor: pointer; font-size: 11px;
+      text-transform: uppercase; letter-spacing: .18em; transition: .3s ease;
+    }
+
+    .btn:hover { background: var(--fg); color: #090909; border-color: var(--fg); transform: translateY(-2px); }
+    .btn.solid { background: var(--fg); color: #090909; }
+    .btn.solid:hover { background: transparent; color: var(--fg); }
+    .btn-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 30px; }
+    .tiny { font-size: 11px; letter-spacing: .04em; color: #777; margin-top: 24px; }
+    .stars { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+    .star {
+      position: absolute; width: 2px; height: 2px; background: #fff; border-radius: 50%;
+      opacity: .45; animation: twinkle 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes twinkle { from { opacity: .12; transform: scale(.7); } to { opacity: .8; transform: scale(1.5); } }
+    .orb {
+      position: absolute; width: min(75vw, 520px); aspect-ratio: 1; border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,.08), transparent 68%);
+      filter: blur(8px); z-index: 0; pointer-events: none;
+    }
+
+    .topline {
+      position: absolute; top: 24px; left: 26px; right: 26px; display: flex;
+      justify-content: space-between; color: #777; font-size: 10px; letter-spacing: .16em;
+      text-transform: uppercase; z-index: 3;
+    }
+
+    .envelope-wrap { margin: 42px auto 26px; width: 180px; height: 125px; position: relative; cursor: pointer; }
+    .envelope {
+      position: absolute; inset: 15px 0 0; background: #e9e3d9; border-radius: 3px;
+      box-shadow: 0 18px 60px rgba(0,0,0,.4); overflow: visible;
+    }
+
+    .envelope::before, .envelope::after {
+      content: ""; position: absolute; bottom: 0; width: 0; height: 0; border-style: solid; z-index: 2;
+    }
+
+    .envelope::before { left: 0; border-width: 0 90px 72px 0; border-color: transparent transparent #d7d0c6 transparent; }
+    .envelope::after { right: 0; border-width: 0 0 72px 90px; border-color: transparent transparent #c9c1b7 transparent; }
+    .flap {
+      position: absolute; top: 0; left: 0; width: 0; height: 0;
+      border-left: 90px solid transparent; border-right: 90px solid transparent;
+      border-top: 72px solid #f4eee5; transform-origin: top; transition: transform .8s ease; z-index: 4;
+    }
+
+    .seal {
+      position: absolute; width: 27px; height: 27px; border-radius: 50%; background: #171717;
+      color: #eee; display: grid; place-items: center; font-family: var(--serif); font-size: 13px;
+      left: 50%; top: 46px; transform: translateX(-50%); z-index: 5; transition: .4s;
+    }
+
+    .envelope.open .flap { transform: rotateX(180deg); z-index: 1; }
+    .envelope.open .seal { opacity: 0; transform: translateX(-50%) scale(.5); }
+    .letter {
+      position: absolute; width: 150px; height: 95px; background: #fffdf8; left: 15px; bottom: 8px;
+      transition: transform .8s .25s ease; z-index: 1; color: #222; display: grid; place-items: center;
+      font-family: var(--serif); font-size: 12px;
+    }
+
+    .envelope.open .letter { transform: translateY(-72px); }
+    .story-card {
+      border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+      padding: 28px 12px; margin: 28px auto; max-width: 520px;
+    }
+
+    .story-card p { font-family: var(--serif); color: #e8e2d9; font-size: clamp(18px, 4vw, 23px); line-height: 1.75; }
+    .quote-mark { font-family: var(--serif); font-size: 52px; color: #777; line-height: .7; }
+    .progress { position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%); display: flex; gap: 7px; z-index: 4; }
+    .progress span { width: 20px; height: 2px; background: #393939; transition: .3s; }
+    .progress span.on { background: #eee; }
+    .choice {
+      min-width: 145px; padding: 15px 20px; border: 1px solid var(--line); background: transparent;
+      color: var(--fg); cursor: pointer; transition: .25s; letter-spacing: .08em; font-size: 12px;
+    }
+
+    .choice:hover { border-color: #fff; background: rgba(255,255,255,.08); }
+    .choice.yes { background: #f3eee6; color: #111; border-color: #f3eee6; }
+    .choice.yes:hover { background: transparent; color: #fff; }
+    .response { min-height: 28px; color: #c9c1b7; font-family: var(--serif); font-style: italic; margin-top: 22px; }
+    .jewel {
+      width: 92px; height: 92px; margin: 18px auto 20px; position: relative;
+      display: grid; place-items: center; opacity: .9;
+      filter: drop-shadow(0 0 18px rgba(231,218,190,.12));
+      animation: jewelFloat 4s ease-in-out infinite;
+    }
+
+    .jewel svg { width: 100%; height: 100%; overflow: visible; }
+    @keyframes jewelFloat {
+      0%, 100% { transform: translateY(0) rotate(-3deg); }
+      50% { transform: translateY(-7px) rotate(3deg); }
+    }
+
+    .footer-note { position: absolute; bottom: 22px; left: 0; right: 0; text-align: center; color: #555; font-size: 9px; letter-spacing: .2em; text-transform: uppercase; }
+    .music {
+      position: fixed; right: 18px; bottom: 18px; z-index: 10; width: 42px; height: 42px;
+      border: 1px solid var(--line); background: rgba(10,10,10,.65); color: #eee;
+      border-radius: 50%; cursor: pointer; display: grid; place-items: center; backdrop-filter: blur(8px);
+    }
+
+    .music.playing { animation: pulse 2s infinite; }
+    @keyframes pulse { 50% { box-shadow: 0 0 0 7px rgba(255,255,255,.05); } }
+    .fade-up { animation: fadeUp 1s .15s both; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 480px) {
+      .screen { padding: 24px 20px; }
+      .topline { left: 18px; right: 18px; top: 18px; font-size: 8px; }
+      .btn-row { gap: 9px; }
+      .choice { min-width: 125px; }
+      .story-card { padding: 22px 6px; }
+      .tiny { line-height: 1.7; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
+
+  </style>
+</head>
+<body>
+  <div class="stars" id="stars"></div>
+  <button class="music" id="musicBtn" aria-label="Putar musik" title="Musik">♫</button>
+
+  <main>
+    <section class="screen active" id="s1">
+      <div class="orb"></div>
+      <div class="topline"><span>A small confession</span><span>16 November · 2026</span></div>
+      <div class="content fade-up">
+        <div class="eyebrow">For someone special</div>
+        <h1>A little<br><span class="accent">something</span><br>for Ratna.</h1>
+        <div class="rule"></div>
+        <p>Ada sesuatu yang sudah lama ingin aku sampaikan.<br>Dan kali ini, aku ingin menyampaikannya dengan cara yang sedikit berbeda.</p>
+        <button class="btn" onclick="go(2)">Take a look <span aria-hidden="true">↗</span></button>
+        <div class="tiny">Made with sincerity, just for you.</div>
+      </div>
+      <div class="footer-note">Please take your time</div>
+    </section>
+
+    <section class="screen" id="s2">
+      <div class="topline"><span>Chapter 01</span><span>A letter for you</span></div>
+      <div class="content fade-up">
+        <div class="eyebrow">Something is waiting</div>
+        <h2>For your<br><span class="accent">eyes only.</span></h2>
+        <p>Sentuh amplopnya. Ada beberapa kata yang ingin aku titipkan.</p>
+        <div class="envelope-wrap" onclick="openLetter()" role="button" tabindex="0" aria-label="Buka amplop">
+          <div class="envelope" id="envelope">
+            <div class="letter">Dear Ratna,</div>
+            <div class="flap"></div><div class="seal">R</div>
+          </div>
+        </div>
+        <p class="tiny" id="envelopeHint">TAP THE ENVELOPE TO OPEN</p>
+        <button class="btn" id="letterNext" style="display:none" onclick="go(3)">Read my words →</button>
+      </div>
+      <div class="progress"><span class="on"></span><span></span><span></span><span></span></div>
+    </section>
+
+    <section class="screen" id="s3">
+      <div class="topline"><span>Chapter 02</span><span>A few honest words</span></div>
+      <div class="content fade-up">
+        <div class="eyebrow">Dear Ratna</div>
+        <div class="quote-mark">“</div>
+        <h2>I'm glad<br><span class="accent">I met you.</span></h2>
+        <div class="story-card">
+          <p>Aku nggak tahu sejak kapan tepatnya, tapi perlahan kamu jadi seseorang yang punya tempat tersendiri di pikiranku.</p>
+        </div>
+        <p>Bukan karena kamu harus menjadi seseorang yang sempurna. Justru aku suka mengenal kamu apa adanya, dengan segala hal kecil yang membuat kamu menjadi diri kamu sendiri.</p>
+        <button class="btn" onclick="go(4)">There's more →</button>
+      </div>
+      <div class="progress"><span class="on"></span><span class="on"></span><span></span><span></span></div>
+    </section>
+
+    <section class="screen" id="s4">
+      <div class="topline"><span>Chapter 03</span><span>What I feel</span></div>
+      <div class="content fade-up">
+        <div class="eyebrow">From the bottom of my heart</div>
+        <h2>It's not just<br><span class="accent">a passing feeling.</span></h2>
+        <div class="story-card">
+          <p>Aku ingin mengenal kamu lebih jauh, mendengarkan cerita-cerita kamu, berbagi hari yang sederhana, dan hadir bukan cuma saat semuanya menyenangkan.</p>
+        </div>
+        <p>Aku nggak bisa menjanjikan semuanya akan selalu mudah. Tapi kalau kamu memberi kesempatan, aku ingin belajar menjalani semuanya dengan tulus, saling menghargai, dan saling menjaga.</p>
+        <button class="btn" onclick="go(5)">One last thing →</button>
+      </div>
+      <div class="progress"><span class="on"></span><span class="on"></span><span class="on"></span><span></span></div>
+    </section>
+
+    <section class="screen" id="s5">
+      <div class="orb"></div>
+      <div class="topline"><span>The question</span><span>Chapter 04 · For Ratna</span></div>
+      <div class="content fade-up">
+        <div class="eyebrow">So, here's my question</div>
+        <h1>Ratna,<br><span class="accent">would you</span><br>be mine?</h1>
+        <div class="rule"></div>
+        <div class="jewel" aria-label="Ilustrasi cincin berlian" role="img">
+          <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="50" cy="66" rx="25" ry="12" stroke="#CFC4AE" stroke-width="3.2"/>
+            <path d="M27 65C30 81 39 88 50 88C61 88 70 81 73 65" stroke="#E9DFC9" stroke-width="3.2" stroke-linecap="round"/>
+            <path d="M40 42L50 24L60 42L50 55L40 42Z" fill="#F4EEE3" fill-opacity=".16" stroke="#E9DFC9" stroke-width="2"/>
+            <path d="M40 42H60M50 24V55M40 42L50 35L60 42" stroke="#F4EEE3" stroke-width="1.3"/>
+            <path d="M50 15V9M67 27L72 22M33 27L28 22" stroke="#E9DFC9" stroke-width="1.4" stroke-linecap="round" opacity=".8"/>
+          </svg>
+        </div>
+        <p>Aku jatuh suka sama kamu. Dan kalau kamu juga merasakan hal yang sama,<br>aku ingin kita mencoba sesuatu yang lebih dari sekadar teman.</p>
+        <p style="color:#e8e2d9;font-family:var(--serif);font-size:18px">Hayoo jawab jawab</p>
+        <div class="btn-row">
+          <button class="choice yes" onclick="answer('yes')">Iya, mau ♡</button>
+          <button class="choice" onclick="answer('no')">Maaf, belum bisa</button>
+        </div>
+        <div class="response" id="response" aria-live="polite"></div>
+        <p class="tiny">Apa pun jawabanmu, Terima Kasih sudah membaca sampai sini.</p>
+      </div>
+      <div class="progress"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></div>
+    </section>
+
+    <section class="screen" id="s6">
+      <div class="content fade-up">
+        <div class="eyebrow" id="endingEyebrow">A New Beginning</div>
+        <h1 id="endingTitle">Thank you,<br><span class="accent">Ratna.</span></h1>
+        <div class="rule"></div>
+        <p id="endingText">Apa pun yang akan terjadi setelah ini, aku bersyukur sudah punya keberanian untuk jujur tentang perasaanku.</p>
+        <p style="color:#eee;font-family:var(--serif);font-size:20px;font-style:italic" id="endingSign">With sincerity, Darren.</p>
+        <button class="btn" onclick="go(1)">Back to the beginning ↺</button>
+      </div>
+      <div class="footer-note">The end · or maybe a beginning</div>
+    </section>
+  </main>
+
+  <audio id="bgMusic" loop preload="none">
+    <!-- Tambahkan file musik milikmu sendiri, misalnya: <source src="music.mp3" type="audio/mpeg"> -->
+  </audio>
+
+  <script>
+    const screens = [...document.querySelectorAll('.screen')];
+    const stars = document.getElementById('stars');
+    let letterOpened = false;
+    let musicOn = false;
+
+    // Bintang kecil bergerak lembut di latar.
+    for (let i = 0; i < 65; i++) {
+      const star = document.createElement('i');
+      star.className = 'star';
+      star.style.left = Math.random() * 100 + '%';
+      star.style.top = Math.random() * 100 + '%';
+      star.style.animationDelay = (Math.random() * 4) + 's';
+      star.style.animationDuration = (2 + Math.random() * 4) + 's';
+      stars.appendChild(star);
+    }
+
+    function go(number) {
+      screens.forEach((screen, index) => {
+        screen.classList.toggle('active', index === number - 1);
+      });
+      const active = screens[number - 1];
+      const content = active.querySelector('.content');
+      if (content) {
+        content.classList.remove('fade-up');
+        void content.offsetWidth;
+        content.classList.add('fade-up');
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function openLetter() {
+      if (letterOpened) return;
+      letterOpened = true;
+      document.getElementById('envelope').classList.add('open');
+      document.getElementById('envelopeHint').textContent = 'A LETTER, JUST FOR YOU';
+      setTimeout(() => {
+        document.getElementById('letterNext').style.display = 'inline-block';
+      }, 850);
+    }
+
+    document.querySelector('.envelope-wrap').addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        openLetter();
+      }
+    });
+
+    function answer(type) {
+      const response = document.getElementById('response');
+      if (type === 'yes') {
+        response.textContent = 'Kamu baru saja membuat hari ini jadi sangat berarti. ♡';
+        setTimeout(() => {
+          document.getElementById('endingEyebrow').textContent = 'A beautiful beginning';
+          document.getElementById('endingTitle').innerHTML = 'You made me<br><span class="accent">the happiest.</span>';
+          document.getElementById('endingText').textContent = 'Terima kasih sudah mau memberi kita kesempatan. Kita jalani pelan-pelan, ya. Semoga kita bisa saling membuat hari-hari menjadi lebih baik.';
+          document.getElementById('endingSign').textContent = 'I’m looking forward to us. — Darren';
+          go(6);
+        }, 1200);
+      } else {
+        response.textContent = 'Terima kasih sudah jujur. Aku tetap menghargai perasaan dan keputusanmu.';
+        setTimeout(() => {
+          document.getElementById('endingEyebrow').textContent = 'Thank you for being honest';
+          document.getElementById('endingTitle').innerHTML = 'Still wishing<br><span class="accent">you well.</span>';
+          document.getElementById('endingText').textContent = 'Nggak apa-apa, Ratna. Aku menghargai keputusanmu dan nggak ingin membuatmu merasa nggak nyaman. Terima kasih sudah meluangkan waktu untuk membaca ini.';
+          document.getElementById('endingSign').textContent = 'Take care, — Darren.';
+          go(6);
+        }, 1200);
+      }
+    }
+
+    // Browser tidak mengizinkan autoplay. Tombol ini siap digunakan setelah file musik ditambahkan.
+    document.getElementById('musicBtn').addEventListener('click', async () => {
+      const audio = document.getElementById('bgMusic');
+      if (!audio.querySelector('source') && !audio.src) {
+        alert('Tambahkan file musik milikmu (contoh: music.mp3) ke bagian audio di HTML terlebih dahulu.');
+        return;
+      }
+      try {
+        if (musicOn) { audio.pause(); musicOn = false; }
+        else { await audio.play(); musicOn = true; }
+        document.getElementById('musicBtn').classList.toggle('playing', musicOn);
+        document.getElementById('musicBtn').textContent = musicOn ? 'Ⅱ' : '♫';
+      } catch (error) {
+        alert('Musik belum bisa diputar. Coba periksa file musiknya.');
+      }
+    });
+  </script>
+</body>
+</html>
